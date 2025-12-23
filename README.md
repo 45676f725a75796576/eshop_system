@@ -7,3 +7,5 @@ System for e-shops to manage warehouse and register new orders.
      - code is compatible only with MS SQL
 
 ![db diagram](https://github.com/45676f725a75796576/eshop_system/blob/main/eshop_diagram.jpg "db diagram")
+
+Don't forget to create login for user `eshop_api_user`.
