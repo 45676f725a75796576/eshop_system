@@ -10,6 +10,8 @@ System for e-shops to manage warehouses and register new orders.
 2. The code is compatible **only with Microsoft SQL Server**.  
 3. Refer to the database diagram for structure.  
 
+![Database diagram](https://github.com/45676f725a75796576/eshop_system/blob/main/eshop_diagram.jpg?raw=true "database diagram")
+
 **Important:** Don’t forget to create a login for the user `admin`.  
 
 **Example SQL code for login:**
