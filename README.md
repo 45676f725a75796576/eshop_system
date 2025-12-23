@@ -19,3 +19,9 @@ WITH PASSWORD = 'Str0ngP455w0rd',
 GO
 ```
 *use it on master*
+
+### CONFIGURATION FILE
+
+Before doing something check configuration file in `./src/.env`.
+
+Check if server address is correct, it can be IPv4, IPv6 or domain.
