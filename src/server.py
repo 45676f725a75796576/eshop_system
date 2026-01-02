@@ -2,13 +2,16 @@ from flask import Flask, abort, jsonify
 
 from os import getenv
 from dotenv import load_dotenv
-from mssql_python import connect
+import pymssql
 
 load_dotenv()
 
-sql_connection_string = f"Server={getenv("SERVER")};Database={getenv("DATABASE")};User Id={getenv("USER")};Password={getenv("PASSWORD")};Encrypt=True;TrustServerCertificate=True"
-
-conn = connect(sql_connection_string)
+conn = pymssql.MSSQL(
+    server=getenv("SERVER"),
+    user=getenv("USER"),
+    password=getenv("PASSWORD"),
+    database=getenv("DATABASE")
+)
 
 app = Flask(__name__)
 
