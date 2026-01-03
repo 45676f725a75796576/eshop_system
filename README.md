@@ -31,3 +31,5 @@ GO
 Before performing any operations, check the configuration file at `./src/.env`.
 
 Ensure that the server address is correct; it can be an IPv4 address, IPv6 address, or domain name.
+
+!After creating new login for admin, update password in configuration file!
