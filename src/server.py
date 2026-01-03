@@ -2,18 +2,36 @@ from flask import Flask, abort, jsonify
 
 from os import getenv
 from dotenv import load_dotenv
-import pymssql
+import pyodbc
+from table_gateway import *
 
 load_dotenv()
 
-conn = pymssql.MSSQL(
-    server=getenv("SERVER"),
-    user=getenv("USER"),
-    password=getenv("PASSWORD"),
-    database=getenv("DATABASE")
+# Read ODBC and DB settings from environment
+server_host = getenv('SERVER', '127.0.0.1')
+server_port = getenv('DB_SERVER_PORT', getenv('DB_PORT', '1433'))
+driver = getenv('ODBC_DRIVER', 'ODBC Driver 18 for SQL Server')
+encrypt = getenv('ENCRYPT', 'no')
+trust = getenv('TRUST', 'no')
+
+# For SQL Server, specify host and port as 'host,port'
+server_and_port = f"{server_host},{server_port}"
+
+conn_str = (
+    f"DRIVER={{{driver}}};"
+    f"SERVER={server_and_port};"
+    f"DATABASE={{{getenv('DATABASE')}}};"
+    f"UID={getenv('USER', "admin")};"
+    f"PWD={getenv('PASSWORD')};"
+    f"Encrypt={encrypt};"
+    f"TrustServerCertificate={trust};"
 )
 
+conn = None
+
 app = Flask(__name__)
+
+gateways = {}
 
 @app.route('/orders', methods=['POST'])
 def create_order():
@@ -116,4 +134,22 @@ def index():
     return jsonify(message="E-shop API. All endpoints currently return 501 Not Implemented.")
 
 if __name__ == '__main__':
-    app.run('0.0.0.0', getenv("API_SERVER_PORT"))
+    try:
+        conn = pyodbc.connect(conn_str)
+        
+        gateways = {"Orders": OrdersGateway(conn.cursor())}
+    except Exception as e:
+        # Provide actionable diagnostics for common ODBC issues (driver not installed, wrong name)
+        try:
+            available = pyodbc.drivers()
+        except Exception:
+            available = []
+        masked = conn_str.replace(getenv('PASSWORD', ''), '****') if getenv('PASSWORD') else conn_str
+        print("Failed to connect using pyodbc:", repr(e))
+        print("Connection string used (password masked):", masked)
+        print("Installed ODBC drivers:", available)
+        print("Common fixes: install the matching Microsoft ODBC Driver for SQL Server, or set ODBC_DRIVER to a driver from the list above.")
+        raise
+
+    # Ensure port is integer
+    app.run('0.0.0.0', int(getenv("API_SERVER_PORT", 5000)))
