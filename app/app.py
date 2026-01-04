@@ -8,7 +8,7 @@ server_port = 5000
 token = ""
 
 ITEM_PARAMS = {
-    "Orders": ["user_id", "currency", "shipping_address", "billing_address"],
+    "Orders": ["user_id", "currency", "shipping_address", "billing_address", "order_items"],
     "Products": ["product_name", "unit_price", "tax_rate"],
     "Warehouses": ["warehouse_name", "location_code", "is_active"],
     "Inventory": ["product_id", "warehouse_id", "quantity"]
@@ -145,11 +145,16 @@ def create_main_panel() -> tk.PanedWindow:
         
         is_new = item_id.endswith(":new")
 
-        show_item_editor(section, item_name, is_new)
+        show_item_editor(section, item_name, is_new, item_id)
 
-    def show_item_editor(section: str, item_name: str, is_new: bool):
+    def show_item_editor(section: str, item_name: str, is_new: bool, item_id):
         for widget in frame_right.winfo_children():
             widget.destroy()
+            
+        try:
+            item_id = int(str(item_id).split(":")[1])
+        except:
+            pass
             
         title = f"Create new {section}" if is_new else item_name
 
@@ -165,9 +170,15 @@ def create_main_panel() -> tk.PanedWindow:
             row = tk.Frame(frame_right)
             row.pack(fill=tk.X, padx=10, pady=4)
 
-            tk.Label(row, text=param, width=20, anchor="w").pack(side=tk.LEFT)
-            tk.Entry(row).pack(side=tk.RIGHT, fill=tk.X, expand=True)
-
+            label = tk.Label(row, text=param, width=20, anchor="w").pack(side=tk.LEFT)
+            entry = tk.Entry(row)
+            entry.pack(side=tk.RIGHT, fill=tk.X, expand=True)
+            
+            if not is_new and not isinstance(item_id, str):
+                entry.insert(0, data[section][int(item_id)][param])
+            else:
+                pass
+            
     tree = ttk.Treeview(frame_left)
     tree.pack(fill=tk.BOTH, expand=True)
     tree.bind("<<TreeviewSelect>>", on_tree_select)

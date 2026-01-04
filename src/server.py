@@ -137,14 +137,14 @@ def get_all_products():
 
 # ============================================================================== warehouses
 
-@app.route("/warehouse", methods=["POST"])
+@app.route("/warehouses", methods=["POST"])
 def create_warehouse():
     data = request.json
     gw = WarehouseGateway(get_cursor())
     gw.insert(data["warehouse_name"], data["location_code"], data["is_active"])
     return jsonify({"status": "created"}), 201
 
-@app.route("/warehouse/<int:warehouse_id>", methods=["GET"])
+@app.route("/warehouses/<int:warehouse_id>", methods=["GET"])
 def get_warehouse(warehouse_id):
     gw = WarehouseGateway(get_cursor())
     wh = gw.selectById(warehouse_id)
@@ -152,24 +152,24 @@ def get_warehouse(warehouse_id):
         abort(404)
     return jsonify(wh)
 
-@app.route("/warehouse/<int:warehouse_id>", methods=["PUT"])
+@app.route("/warehouses/<int:warehouse_id>", methods=["PUT"])
 def update_warehouse(warehouse_id):
     gw = WarehouseGateway(get_cursor())
     gw.updateById(warehouse_id, request.json)
     return jsonify({"status": "updated"})
 
-@app.route("/warehouse/<int:warehouse_id>", methods=["DELETE"])
+@app.route("/warehouses/<int:warehouse_id>", methods=["DELETE"])
 def delete_warehouse(warehouse_id):
     gw = WarehouseGateway(get_cursor())
     gw.deleteById(warehouse_id)
     return jsonify({"status": "deleted"})
 
-@app.route("/warehouse", methods=["GET"])
+@app.route("/warehouses", methods=["GET"])
 def list_warehouses():
     gw = WarehouseGateway(get_cursor())
     return jsonify(gw.selectAll())
 
-@app.route("/orders/all", methods=["GET"])
+@app.route("/warehouses/all", methods=["GET"])
 def get_all_warehouses():
     gw = WarehouseGateway(get_cursor())
     return jsonify(gw.selectAll())
