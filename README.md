@@ -12,7 +12,7 @@ System for e-shops to manage warehouses and register new orders.
 
 ![Database diagram](https://github.com/45676f725a75796576/eshop_system/blob/main/eshop_diagram.jpg?raw=true "database diagram")
 
-**Important:** Don’t forget to create a login for the user `admin`.  
+**Important:** Don’t forget to create a login for the user `admin` or alternatively you can create user and login in Microsoft SQL Server Management Studio.  
 
 **Example SQL code for login:**
 
@@ -52,3 +52,9 @@ Script for inserting test data for database is saved in `./database_insert_test_
 Use it to test functionality.
 
 *Test data are made by ChatGPT*
+
+#### Test API
+
+Project contains test API without real database for testing functionality of user app, without creating real database.
+
+**This test API is created by ChatGPT**

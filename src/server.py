@@ -27,13 +27,13 @@ trust = getenv("TRUST", "no")
 server_and_port = f"{server_host},{server_port}"
 
 CONN_STR = (
-    f"DRIVER={{{driver}}};"
+    f"DRIVER={driver};"
     f"SERVER={server_and_port};"
     f"DATABASE={getenv('DATABASE')};"
     f"UID={getenv('USER', 'admin')};"
     f"PWD={getenv('PASSWORD')};"
     f"Encrypt={encrypt};"
-    #f"TrustServerCertificate={trust};"
+    f"TrustServerCertificate={trust};"
 )
 
 app = Flask(__name__)
@@ -225,9 +225,9 @@ def logout():
         abort(401, "Missing user token")
     for lu in loggedUsers:
         if lu == token:
-            loggedUsers.pop(lu)
+            loggedUsers.remove(lu)
             return jsonify({"deleted token": "succesfully"})
-    return jsonify({"deleted token": "token not found"})
+    return jsonify({"deleted token": "token not found"}), 404
 
 
 if __name__ == '__main__':
