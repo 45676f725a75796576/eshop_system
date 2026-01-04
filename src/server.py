@@ -2,6 +2,7 @@ from flask import Flask, abort, jsonify, request, g
 from os import getenv
 from dotenv import load_dotenv
 import pyodbc
+import secrets
 
 from table_gateway import (
     OrdersGateway,
@@ -12,6 +13,8 @@ from table_gateway import (
     SalesReportGateway, 
     StockReportGateway
 )
+
+loggedUsers = []
 
 load_dotenv()
 
@@ -185,6 +188,32 @@ def report_stock():
     return jsonify(gw.selectAll())
     
 # =========================================================================
+
+@app.route('/authorize', methods=['GET'])
+def authorize():
+    global loggedUsers
+    try:
+        password = request.args.get('password')
+
+        if password == getenv("API_PASSWORD"):
+            loggedUsers.append(secrets.token_hex(16))
+            return { "token": loggedUsers[-1] }
+        
+    except Exception as e:
+        print(repr(e))
+        
+@app.route('/logout', methods=['DELETE'])
+def logout():
+    global loggedUsers
+    token = request.args.get("token")
+    if not token:
+        abort(401, "Missing user token")
+    for lu in loggedUsers:
+        if lu == token:
+            loggedUsers.pop(lu)
+            return jsonify({"deleted token": "succesfully"})
+    return jsonify({"deleted token": "token not found"})
+
 
 if __name__ == '__main__':
     app.run('0.0.0.0', int(getenv("API_SERVER_PORT", 5000)))
