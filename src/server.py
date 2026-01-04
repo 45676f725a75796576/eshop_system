@@ -33,7 +33,7 @@ CONN_STR = (
     f"UID={getenv('USER', 'admin')};"
     f"PWD={getenv('PASSWORD')};"
     f"Encrypt={encrypt};"
-    f"TrustServerCertificate={trust};"
+    #f"TrustServerCertificate={trust};"
 )
 
 app = Flask(__name__)
@@ -57,7 +57,7 @@ def teardown_request(exception):
         db.commit()
     db.close()
     
-# ===================================================
+# =================================================== orders
 
 @app.route("/orders", methods=["POST"])
 def create_order():
@@ -91,7 +91,12 @@ def delete_order(order_id):
     gw.deleteById(order_id)
     return jsonify({"status": "deleted"})
 
-# ==============================================================================
+@app.route("/orders/all", methods=["GET"])
+def get_all_orders():
+    gw = OrdersGateway(get_cursor())
+    return jsonify(gw.selectAll())
+
+# ============================================================================== products
 
 @app.route("/products", methods=["POST"])
 def create_product():
@@ -125,7 +130,12 @@ def list_products():
     gw = ProductsGateway(get_cursor())
     return jsonify(gw.selectAll())
 
-# ==============================================================================
+@app.route("/products/all", methods=["GET"])
+def get_all_products():
+    gw = ProductsGateway(get_cursor())
+    return jsonify(gw.selectAll())
+
+# ============================================================================== warehouses
 
 @app.route("/warehouse", methods=["POST"])
 def create_warehouse():
@@ -159,14 +169,19 @@ def list_warehouses():
     gw = WarehouseGateway(get_cursor())
     return jsonify(gw.selectAll())
 
-# ======================================================================
+@app.route("/orders/all", methods=["GET"])
+def get_all_warehouses():
+    gw = WarehouseGateway(get_cursor())
+    return jsonify(gw.selectAll())
+
+# ====================================================================== inventory
 
 @app.route("/inventory", methods=["GET"])
 def list_inventory():
     gw = InventoryGateway(get_cursor())
     return jsonify(gw.selectAll())
 
-# =======================================================================
+# ======================================================================= payments
 
 @app.route("/payments", methods=["POST"])
 def create_payment():
@@ -175,7 +190,7 @@ def create_payment():
     gw.insert(data["order_id"], data["payment_provider"], data["provider_transaction_id"])
     return jsonify({"status": "created"}), 201
 
-# =======================================================================
+# ======================================================================= reports
 
 @app.route("/report/sales", methods=["GET"])
 def report_sales():
@@ -187,7 +202,7 @@ def report_stock():
     gw = StockReportGateway(get_cursor())
     return jsonify(gw.selectAll())
     
-# =========================================================================
+# ========================================================================= authorization
 
 @app.route('/authorize', methods=['GET'])
 def authorize():

@@ -33,3 +33,22 @@ Before performing any operations, check the configuration file at `./src/.env`.
 Ensure that the server address is correct; it can be an IPv4 address, IPv6 address, or domain name.
 
 !After creating new login for admin, update password in configuration file!
+
+```
+SERVER=127.0.0.1 # database server ip address
+DB_SERVER_PORT=1433 # database server port
+DATABASE=eshop # database
+USER=admin # database user
+PASSWORD=Q9!rT4Z@eM2K#L8x # password for user
+API_PASSWORD=Q9!rT4Z@eM2K#L8x # password for API to authorize
+ODBC_DRIVER=ODBC Driver 18 for SQL Server # Driver to connect database
+ENCRYPT=yes # encrypt communication between API and database server
+TRUST=yes
+```
+
+### Test Data
+
+Script for inserting test data for database is saved in `./database_insert_test_data.sql`.
+Use it to test functionality.
+
+*Test data are made by ChatGPT*
