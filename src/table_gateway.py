@@ -142,21 +142,12 @@ class OrderItemsGateway(TableGateway):
             order_id
         )
         return rows_to_dicts(self.cursor, self.cursor.fetchall())
-
-class OrderItemsGateway(TableGateway):
-
-    def addItem(self, order_id: int, product_id: int, quantity: int):
+    
+    def removeItemByNameAndOrder(self, name: str, order_id: int):
         self.cursor.execute(
-            "EXEC dbo.tg_order_item_add ?, ?, ?",
-            order_id, product_id, quantity
+            "DELETE FROM order_items WHERE order_id = ? AND product_id = (SELECT 1 id FROM products WHERE product_name = ?)",
+            order_id, name
         )
-
-    def selectByOrder(self, order_id: int):
-        self.cursor.execute(
-            "SELECT * FROM order_items WHERE order_id = ?",
-            order_id
-        )
-        return rows_to_dicts(self.cursor, self.cursor.fetchall())
 
 class InventoryGateway(TableGateway):
 

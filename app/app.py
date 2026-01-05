@@ -125,7 +125,7 @@ def create_main_panel() -> tk.PanedWindow:
     frame_left = tk.Frame(main)
     frame_left.pack(fill=tk.BOTH, expand=True)
 
-    frame_right = tk.Frame(main, bg="#CFCFCF")
+    frame_right = tk.Frame(main)
 
     def on_tree_select(event):
         tree = event.widget
@@ -161,7 +161,6 @@ def create_main_panel() -> tk.PanedWindow:
         tk.Label(
             frame_right,
             text=title,
-            font=("Arial", 14, "bold")
         ).pack(anchor="w", padx=10, pady=10)
 
         params = ITEM_PARAMS.get(section, [])
