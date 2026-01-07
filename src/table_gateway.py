@@ -127,6 +127,7 @@ class ProductsGateway(TableGateway):
     def selectAll(self):
         self.cursor.execute("SELECT * FROM products")
         return rows_to_dicts(self.cursor, self.cursor.fetchall())
+    
 
 class OrderItemsGateway(TableGateway):
 
@@ -150,6 +151,11 @@ class OrderItemsGateway(TableGateway):
         )
 
 class InventoryGateway(TableGateway):
+    def insert(self, warehouse_id: int, product_id: int, quantity_available: float, quantity_reserved: float = 0):
+        self.cursor.execute(
+            "INSERT INTO inventory (warehouse_id, product_id, quantity_available, quantity_reserved) VALUES (?, ?, ?, ?)",
+            warehouse_id, product_id, quantity_available, quantity_reserved
+        )
 
     def selectByWarehouse(self, warehouse_id: int):
         self.cursor.execute(
@@ -163,6 +169,20 @@ class InventoryGateway(TableGateway):
             "SELECT * FROM inventory WHERE product_id = ?",
             product_id
         )
+        return rows_to_dicts(self.cursor, self.cursor.fetchall())
+    
+    def updateById(self, id: int, data: dict):
+        if not data:
+            return
+        cols = ", ".join(f"{k} = ?" for k in data)
+        values = list(data.values()) + [id]
+        self.cursor.execute(f"UPDATE inventory SET {cols} WHERE id = ?", values)
+
+    def deleteById(self, id: int):
+        self.cursor.execute("DELETE FROM inventory WHERE id = ?", id)
+
+    def selectAll(self):
+        self.cursor.execute("SELECT * FROM inventory")
         return rows_to_dicts(self.cursor, self.cursor.fetchall())
 
 class PaymentsGateway(TableGateway):

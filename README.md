@@ -5,6 +5,14 @@ System for e-shops to manage warehouses and register new orders.
 
 ---
 
+## Project Structure
+
+**SQL Database Scripts:** `/sql`  
+**API Server:** `/src`  
+**Application:** `/app`  
+Other:
+    **Test API:** `/server_emulator_no_db`
+
 ## Setup
 
 1. Create the database using the SQL code from the repository.  
@@ -18,7 +26,7 @@ System for e-shops to manage warehouses and register new orders.
 **Example SQL code for login:**
 
 ```sql
-CREATE LOGIN admin
+CREATE LOGIN  admin
 WITH PASSWORD = 'Str0ngP455w0rd',
      CHECK_POLICY = ON,
      CHECK_EXPIRATION = ON;
@@ -49,7 +57,7 @@ TRUST=yes
 
 ### Test Data
 
-Script for inserting test data for database is saved in `./database_insert_test_data.sql`.
+Script for inserting test data for database is saved in `./sql/database_insert_test_data.sql`.
 Use it to test functionality.
 
 *Test data are made by ChatGPT*

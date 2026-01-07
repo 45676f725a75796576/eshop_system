@@ -3,6 +3,7 @@ from os import getenv
 from dotenv import load_dotenv
 import pyodbc
 import secrets
+from flask_cors import CORS
 
 from table_gateway import (
     OrdersGateway,
@@ -38,6 +39,8 @@ CONN_STR = (
 )
 
 app = Flask(__name__)
+
+cors = CORS(app, resources={r"/*": {"origins": "*"}})
 
 def get_db():
     if "db" not in g:
@@ -195,10 +198,59 @@ def get_all_warehouses():
 
 # ====================================================================== inventory
 
-@app.route("/inventory", methods=["GET"])
+@app.route("/inventory", methods=["POST"])
+def create_inventory():
+    data = request.json
+    required_fields = ["warehouse_id", "product_id", "quantity_available"]
+    if not all(field in data for field in required_fields):
+        abort(400, "Missing required fields: warehouse_id, product_id, quantity_available")
+
+    gw = InventoryGateway(get_cursor())
+    gw.insert(
+        warehouse_id=data["warehouse_id"],
+        product_id=data["product_id"],
+        quantity_available=data["quantity_available"],
+        quantity_reserved=data.get("quantity_reserved", 0)
+    )
+    return jsonify({"status": "created"}), 201
+
+@app.route("/inventory/<int:inventory_id>", methods=["GET"])
+def get_inventory(inventory_id):
+    gw = InventoryGateway(get_cursor())
+    inventory = gw.selectById(inventory_id)
+    if not inventory:
+        abort(404, "Inventory item not found")
+    return jsonify(inventory)
+
+@app.route("/inventory/<int:inventory_id>", methods=["PUT"])
+def update_inventory(inventory_id):
+    data = request.json
+    if not data:
+        abort(400, "No data provided")
+    gw = InventoryGateway(get_cursor())
+    gw.updateById(inventory_id, data)
+    return jsonify({"status": "updated"})
+
+@app.route("/inventory/<int:inventory_id>", methods=["DELETE"])
+def delete_inventory(inventory_id):
+    gw = InventoryGateway(get_cursor())
+    gw.deleteById(inventory_id)
+    return jsonify({"status": "deleted"})
+
+@app.route("/inventory/all", methods=["GET"])
 def list_inventory():
     gw = InventoryGateway(get_cursor())
     return jsonify(gw.selectAll())
+
+@app.route("/inventory/warehouse/<int:warehouse_id>", methods=["GET"])
+def list_inventory_by_warehouse(warehouse_id):
+    gw = InventoryGateway(get_cursor())
+    return jsonify(gw.selectByWarehouse(warehouse_id))
+
+@app.route("/inventory/product/<int:product_id>", methods=["GET"])
+def list_inventory_by_product(product_id):
+    gw = InventoryGateway(get_cursor())
+    return jsonify(gw.selectByProduct(product_id))
 
 # ======================================================================= payments
 

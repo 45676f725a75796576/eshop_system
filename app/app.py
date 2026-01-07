@@ -48,17 +48,18 @@ def update_data():
     data["Inventory"] = list(r.json())
 
 def populate_tree(tree: ttk.Treeview, parent: str, data: dict):
+    tree.detach()
     tree.delete(*tree.get_children())
 
     for section, items in data.items():
         section_id = tree.insert(parent, "end", text=section, open=True)
 
-        for idx, item in enumerate(items):
+        for item in items:
             tree.insert(
                 section_id,
                 "end",
-                text=f"{section} #{idx}",
-                iid=f"{section}:{idx}"
+                text=f'{section} #{item["id"]}',
+                iid=f'{section}:{item["id"]}'
             )
             
         tree.insert(
@@ -150,11 +151,17 @@ def create_main_panel() -> tk.PanedWindow:
     def show_item_editor(section: str, item_name: str, is_new: bool, item_id):
         for widget in frame_right.winfo_children():
             widget.destroy()
-            
-        try:
-            item_id = int(str(item_id).split(":")[1])
-        except:
-            pass
+        
+        if is_new:
+            item = None
+        else:
+            parts = item_id.split(":")
+            if len(parts) != 2:
+                return
+            item_id = int(parts[1])
+            item = next((x for x in data[section] if x["id"] == item_id), None)
+            if item is None:
+                return
             
         title = f"Create new {section}" if is_new else item_name
 
@@ -164,30 +171,53 @@ def create_main_panel() -> tk.PanedWindow:
         ).pack(anchor="w", padx=10, pady=10)
 
         params = ITEM_PARAMS.get(section, [])
+        entries = []
+        entry_params = []
 
+        def save_record():
+            if is_new:
+                payload = {p: e.get() for p, e in zip(entry_params, entries)}
+                url = f"http://{server_ip}:{server_port}/{section.lower()}"
+                r = requests.post(url, json=payload, params={"token": token})
+                r.raise_for_status()
+            update_data()
+            populate_tree(tree, "", data)
         for param in params:
             row = tk.Frame(frame_right)
-            row.pack(fill=tk.X, padx=10, pady=4)
+            row.pack(fill=tk.BOTH, padx=10, pady=4)
 
-            label = tk.Label(row, text=param, width=20, anchor="w").pack(side=tk.LEFT)
+            label = tk.Label(row, text=param, width=20, anchor="w")
+            label.pack(side=tk.LEFT)
             if section == 'Orders' and param == 'order_items':
-
-                url = f"http://{server_ip}:{server_port}/orders/{item_id}/items"
-                r = requests.get(url)
-                for i in r.json:
-                    item_row = tk.Frame(row)
-                    combobox = ttk.Combobox(item_row)
-                    combobox['values'] = tuple()
+                product_names = {}
+                for p in data["Products"]:
+                    product_names[p["product_name"]] = p["id"]
+                
+                if not is_new:
+                    url = f"http://{server_ip}:{server_port}/orders/{item_id}/items"
+                    r = requests.get(url, params={"token": token})
+                    for i in r.json():
+                        item_row = tk.Frame(row)
+                        combobox = ttk.Combobox(item_row)
+                        combobox['values'] = tuple(product_names.keys())
+                        combobox.pack(side=tk.LEFT, fill=tk.X, expand=True)
+                add_row = tk.Frame(row)
+                combobox = ttk.Combobox(add_row, justify='left')
+                combobox['values'] = tuple(product_names.keys())
+                combobox.pack(side=tk.LEFT, fill=tk.X, expand=True)
+                add_btn = tk.Button(add_row, width=20, text='Add')
+                add_btn.pack(anchor='w')
             else:
                 entry = tk.Entry(row)
                 entry.pack(side=tk.RIGHT, fill=tk.X, expand=True)
 
-                if not is_new and not isinstance(item_id, str):
-                    entry.insert(0, data[section][int(item_id)][param])
-                else:
-                    pass
+                entries.append(entry)
+                entry_params.append(param)
 
-        save_btn = tk.Button(frame_right, text="Save", width=10)
+                if item is not None:
+                    entry.insert(0, item[param])
+
+        save_btn = tk.Button(frame_right, text="Save", width=10, command=save_record)
         save_btn.pack(side='left')
             
     tree = ttk.Treeview(frame_left)
