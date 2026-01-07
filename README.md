@@ -1,4 +1,5 @@
 # E-SHOP DATABASE SYSTEM
+*Yegor Zuyev, e-mail: egor.zuyev33@gmail.com*
 
 System for e-shops to manage warehouses and register new orders.
 

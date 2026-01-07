@@ -170,13 +170,25 @@ def create_main_panel() -> tk.PanedWindow:
             row.pack(fill=tk.X, padx=10, pady=4)
 
             label = tk.Label(row, text=param, width=20, anchor="w").pack(side=tk.LEFT)
-            entry = tk.Entry(row)
-            entry.pack(side=tk.RIGHT, fill=tk.X, expand=True)
-            
-            if not is_new and not isinstance(item_id, str):
-                entry.insert(0, data[section][int(item_id)][param])
+            if section == 'Orders' and param == 'order_items':
+
+                url = f"http://{server_ip}:{server_port}/orders/{item_id}/items"
+                r = requests.get(url)
+                for i in r.json:
+                    item_row = tk.Frame(row)
+                    combobox = ttk.Combobox(item_row)
+                    combobox['values'] = tuple()
             else:
-                pass
+                entry = tk.Entry(row)
+                entry.pack(side=tk.RIGHT, fill=tk.X, expand=True)
+
+                if not is_new and not isinstance(item_id, str):
+                    entry.insert(0, data[section][int(item_id)][param])
+                else:
+                    pass
+
+        save_btn = tk.Button(frame_right, text="Save", width=10)
+        save_btn.pack(side='left')
             
     tree = ttk.Treeview(frame_left)
     tree.pack(fill=tk.BOTH, expand=True)

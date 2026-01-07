@@ -131,6 +131,12 @@ class OrderItemsGateway(TableGateway):
 
     def selectByOrder(self, order_id):
         return [i for i in db["order_items"] if i["order_id"] == order_id]
+    
+    def removeItemByNameAndOrder(self, name, order_id):
+        for oi in list(db["order_items"]):
+            if oi["order_id"] == order_id and db["order_items"][ oi["product_id"]]["name"] == name:
+                list(db["order_items"]).remove(oi)
+        return 
 
 
 # ========================= inventory

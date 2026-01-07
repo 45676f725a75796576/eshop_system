@@ -34,6 +34,21 @@ def get_order(id):
 def orders_all():
     return jsonify(OrdersGateway().selectAll())
 
+@app.route("/orders/<int:order_id>/items", methods=["POST"])
+def add_item_to_order(order_id: int):
+    data = request.json
+    gw = OrderItemsGateway()
+    return jsonify(gw.addItem(order_id, data["product_id"], data["quantity"]))
+@app.route("/orders/<int:order_id>/items", methods=["DELETE"])
+def remove_item_from_order(order_id: int):
+    data = request.json
+    gw = OrderItemsGateway()
+    return jsonify(gw.removeItemByNameAndOrder(data["name"], order_id))
+@app.route("/orders/<int:order_id>/items", methods=["GET"])
+def get_all_items_from_order(order_id: int):
+    gw = OrderItemsGateway()
+    return jsonify(gw.selectByOrder(order_id))
+
 
 # ===== products
 
