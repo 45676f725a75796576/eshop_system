@@ -26,7 +26,7 @@ driver = getenv("ODBC_DRIVER", "ODBC Driver 18 for SQL Server")
 encrypt = getenv("ENCRYPT", "no")
 trust = getenv("TRUST", "no")
 
-server_and_port = f"{server_host},{server_port}"
+server_and_port = f"{server_host}"
 
 CONN_STR = (
     f"DRIVER={driver};"

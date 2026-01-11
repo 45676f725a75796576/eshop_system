@@ -307,6 +307,20 @@ button {
 
 .section-header {
     margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.section-header h2 {
+    flex: 1;
+    margin: 0;
+}
+
+.report-actions {
+    display: flex;
+    gap: 10px;
 }
 
 /* Table Styles */
@@ -355,18 +369,16 @@ button {
 /* Expandable Row */
 .expandable-row {
     cursor: pointer;
-    position: relative;
 }
 
-.expandable-row::before {
-    content: '▶';
-    position: absolute;
-    left: -15px;
+.expand-arrow {
+    display: inline-block;
     transition: transform 0.2s ease;
+    font-size: 12px;
 }
 
 .expandable-row.expanded::before {
-    transform: rotate(90deg);
+    /* Removed - arrow is now inline */
 }
 
 .expanded-content {

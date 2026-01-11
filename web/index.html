@@ -59,7 +59,7 @@
                     <table class="data-table" id="ordersTable">
                         <thead>
                             <tr>
-                                <td>-</td>
+                                <th style="width: 40px;"></th>
                                 <th>Order ID</th>
                                 <th>User ID</th>
                                 <th>Items</th>
@@ -185,6 +185,10 @@
                 <div class="section-header">
                     <button class="btn-back" onclick="showSection('reports')">← Back to Reports</button>
                     <h2 id="reportViewTitle"></h2>
+                    <div class="report-actions">
+                        <button class="btn-action" onclick="Reports.exportJSON()">📥 Export JSON</button>
+                        <button class="btn-action" onclick="Reports.exportCSV()">📥 Export CSV</button>
+                    </div>
                 </div>
                 <div id="reportViewContent" class="report-content">
                     <!-- Report content will be populated here -->

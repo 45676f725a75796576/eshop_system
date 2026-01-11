@@ -1,5 +1,8 @@
 // Reports Management Module
 const Reports = {
+    currentReportData: null,
+    currentReportType: null,
+    
     // View a report
     async viewReport(reportType) {
         UI.showSection('reportView');
@@ -15,12 +18,16 @@ const Reports = {
                 const data = await API.reports.getSales();
                 console.log('Sales report data:', data);
                 console.log('First item:', data && data.length > 0 ? data[0] : 'No data');
+                this.currentReportData = data;
+                this.currentReportType = 'sales';
                 this.renderSalesReport(data, contentElement);
                 document.getElementById('salesReportUpdate').textContent = new Date().toLocaleString();
             } else if (reportType === 'stock') {
                 titleElement.textContent = 'Stock Report';
                 const data = await API.reports.getStock();
                 console.log('Stock report data:', data);
+                this.currentReportData = data;
+                this.currentReportType = 'stock';
                 this.renderStockReport(data, contentElement);
                 document.getElementById('stockReportUpdate').textContent = new Date().toLocaleString();
             }
@@ -30,6 +37,81 @@ const Reports = {
         } finally {
             UI.hideLoading();
         }
+    },
+    
+    // Export report as JSON
+    exportJSON() {
+        if (!this.currentReportData || !this.currentReportType) {
+            UI.alert('No report data to export');
+            return;
+        }
+        
+        const filename = `${this.currentReportType}_report_${new Date().toISOString().split('T')[0]}.json`;
+        const jsonStr = JSON.stringify(this.currentReportData, null, 2);
+        const blob = new Blob([jsonStr], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    },
+    
+    // Export report as CSV
+    exportCSV() {
+        if (!this.currentReportData || !this.currentReportType) {
+            UI.alert('No report data to export');
+            return;
+        }
+        
+        if (!this.currentReportData || this.currentReportData.length === 0) {
+            UI.alert('No data to export');
+            return;
+        }
+        
+        // Get all unique keys from the data
+        const keys = Object.keys(this.currentReportData[0]);
+        
+        // Create CSV header
+        let csv = keys.join(',') + '\n';
+        
+        // Add data rows
+        this.currentReportData.forEach(row => {
+            const values = keys.map(key => {
+                let value = row[key];
+                
+                // Handle null/undefined
+                if (value === null || value === undefined) {
+                    return '';
+                }
+                
+                // Convert to string and escape quotes
+                value = String(value);
+                
+                // If value contains comma, newline, or quote, wrap in quotes and escape quotes
+                if (value.includes(',') || value.includes('\n') || value.includes('"')) {
+                    value = '"' + value.replace(/"/g, '""') + '"';
+                }
+                
+                return value;
+            });
+            csv += values.join(',') + '\n';
+        });
+        
+        const filename = `${this.currentReportType}_report_${new Date().toISOString().split('T')[0]}.csv`;
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
     },
     
     // Render sales report
