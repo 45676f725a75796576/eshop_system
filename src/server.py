@@ -284,9 +284,11 @@ def authorize():
         if password == getenv("API_PASSWORD"):
             loggedUsers.append(secrets.token_hex(16))
             return { "token": loggedUsers[-1] }
+        else:
+            abort(401, "Unauthorized")
         
     except Exception as e:
-        print(repr(e))
+        abort(401, "Unauthorized")
         
 @app.route('/logout', methods=['DELETE'])
 def logout():

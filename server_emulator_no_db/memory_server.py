@@ -10,21 +10,40 @@ CORS(app, resources={r"/*": {"origins": "*"}})
 loggedUsers = []
 
 db = {
-    "orders": {},        # dict: order_id -> order
-    "order_items": {},   # dict: item_id -> item
-    "products": {1: {"product_name": "ThinkPad X270", "unit_price": 1700, "tax_rate": 0.21}},      # dict: product_id -> product
+    "orders": {1: {
+        "id": 1,
+        "id_user": 1,
+        "status": "CREATED",
+        "total_amount": 0,
+        "unit_price": 0,
+        "tax_rate": 0,
+        "currency": "CZK",
+        "payment_status": "INITIATED",
+        "warehouse_id": 1,
+        "shipping_address": "Armenska 2673, Kladno 27201",
+        "billing_address": "Armenska 2673, Kladno 27201",
+        "created_at": "2025-12-23T00:00:00",
+        "updated_at": "2025-12-23T00:00:00"
+    }},        # dict: order_id -> order
+    "order_items": {1: {
+        "id": 1,
+        "order_id": 1,
+        "product_id": 1,
+        "quantity": 1
+    }},   # dict: item_id -> item
+    "products": {1: {"id": 1, "product_name": "ThinkPad X270", "unit_price": 1700, "tax_rate": 0.21}},      # dict: product_id -> product
     "warehouses": {1: {"id": 1, "warehouse_name": "Main", "location_code": "PRG1", "is_active": True}}, 
-    "inventory": {},
+    "inventory": {1: {"id": 1,"warehouse_id": 1, "product_id": 1, "quantity_available": 30, "quantity_reserved": 5}},
     "payments": {},
 }
 
 
 counters = {
-    "orders": 1,
-    "order_items": 1,
-    "products": 1,
-    "warehouses": 1,
-    "inventory": 1,
+    "orders": 2,
+    "order_items": 2,
+    "products": 2,
+    "warehouses": 2,
+    "inventory": 2,
     "payments": 1
 }
 
@@ -291,29 +310,29 @@ def report_sales():
 
     # Group order items by order_id
     items_by_order = defaultdict(list)
-    for item in db.get("order_items", []):
-        items_by_order[item.get("order_id")].append(item)
+    for item in db["order_items"].values():
+        items_by_order[item["order_id"]].append(item)
 
-    for order in db.get("orders", []):
-        order_id = order.get("id")
-        items = items_by_order.get(order_id, [])
+    for k, order in db["orders"].items():
+        order_id = order["id"]
+        items = items_by_order[order_id]
 
-        total_items = sum(item.get("quantity", 0) for item in items)
-        total_amount_calculated = sum(item.get("unit_price", 0) * item.get("quantity", 0) * (1 + item.get("tax_rate", 0)) for item in items)
+        total_items = sum(item["quantity"] for item in items)
+        total_amount_calculated = sum(item["unit_price"] * item["quantity"] * (1 + item.get("tax_rate", 0.21)) for item in items)
 
         # Get warehouse name safely
-        warehouse = next((w for w in db.get("warehouses", []) if w.get("id") == order.get("warehouse_id")), {})
+        warehouse = next((w for k, w in db.get("warehouses", []).items() if w.get("id") == order.get("warehouse_id")), {})
         warehouse_name = warehouse.get("warehouse_name", "UNKNOWN")
 
         sales_report.append({
             "order_id": order_id,
-            "user_id": order.get("id_user"),
-            "order_status": order.get("status_name", "UNKNOWN"),
-            "payment_status": order.get("payment_status_name", "UNKNOWN"),
-            "total_amount": order.get("total_amount", 0),
-            "currency": order.get("currency", "USD"),
+            "user_id": order["user_id"],
+            "order_status": order["status"],
+            "payment_status": order["payment_status"],
+            "total_amount": order["total_amount"],
+            "currency": order["currency"],
             "warehouse_name": warehouse_name,
-            "created_at": order.get("created_at"),
+            "created_at": order["created_at"],
             "total_items": total_items,
             "total_amount_calculated": total_amount_calculated
         })
@@ -328,17 +347,17 @@ def report_sales():
 def report_stock():
     stock_report = []
 
-    for inv in db.get("inventory", []):
-        warehouse = next((w for w in db.get("warehouses", []) if w.get("id") == inv.get("warehouse_id")), {})
-        product = next((p for p in db.get("products", []) if p.get("id") == inv.get("product_id")), {})
+    for k, inv in db["inventory"].items():
+        warehouse = next((w for k, w in db["warehouses"].items() if w["id"] == inv["warehouse_id"]), {})
+        product = next((p for p in db["products"].values() if p["id"] == inv["product_id"]), {})
 
         stock_report.append({
             "inventory_id": inv.get("id"),
             "warehouse_name": warehouse.get("warehouse_name", "UNKNOWN"),
             "product_name": product.get("product_name", "UNKNOWN"),
-            "quantity_available": inv.get("quantity_available", 0),
-            "quantity_reserved": inv.get("quantity_reserved", 0),
-            "quantity_total": inv.get("quantity_available", 0) + inv.get("quantity_reserved", 0)
+            "quantity_available": inv["quantity_available"],
+            "quantity_reserved": inv["quantity_reserved"],
+            "quantity_total": inv["quantity_available"] + inv["quantity_reserved"]
         })
 
     return jsonify(stock_report)

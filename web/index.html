@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Shop Management</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <!-- Connection Modal -->
+    <div id="connectionModal" class="modal">
+        <div class="modal-content">
+            <h2>Connect to API Server</h2>
+            <form id="connectionForm">
+                <div class="form-group">
+                    <label for="apiHost">Server IP:</label>
+                    <input type="text" id="apiHost" name="apiHost" value="127.0.0.1" required>
+                </div>
+                <div class="form-group">
+                    <label for="apiPort">Port:</label>
+                    <input type="text" id="apiPort" name="apiPort" value="5000" required>
+                </div>
+                <div class="form-group">
+                    <label for="apiPassword">Password:</label>
+                    <input type="password" id="apiPassword" name="apiPassword" required>
+                </div>
+                <button type="submit" class="btn-primary">Connect</button>
+                <div id="connectionError" class="error-message"></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main Application -->
+    <div id="mainApp" style="display: none;">
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <h1>E-Shop Manager</h1>
+                <div class="connection-status">
+                    <span class="status-indicator"></span>
+                    <span id="connectionInfo"></span>
+                </div>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="#" data-section="orders" class="nav-link active">Orders</a></li>
+                <li><a href="#" data-section="products" class="nav-link">Products</a></li>
+                <li><a href="#" data-section="warehouses" class="nav-link">Warehouses</a></li>
+                <li><a href="#" data-section="reports" class="nav-link">Reports</a></li>
+            </ul>
+            <button id="disconnectBtn" class="btn-disconnect">Disconnect</button>
+        </nav>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Orders Section -->
+            <section id="ordersSection" class="content-section active">
+                <h2>Orders Management</h2>
+                <div class="table-container">
+                    <table class="data-table" id="ordersTable">
+                        <thead>
+                            <tr>
+                                <td>-</td>
+                                <th>Order ID</th>
+                                <th>User ID</th>
+                                <th>Items</th>
+                                <th>Status</th>
+                                <th>
+                                    <button class="btn-action btn-create" onclick="createOrder()">+ New Order</button>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody id="ordersTableBody">
+                            <!-- Orders will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Products Section -->
+            <section id="productsSection" class="content-section">
+                <h2>Products Management</h2>
+                <div class="table-container">
+                    <table class="data-table" id="productsTable">
+                        <thead>
+                            <tr>
+                                <th>Product ID</th>
+                                <th>Product Name</th>
+                                <th>Price</th>
+                                <th>Tax Rate</th>
+                                <th>
+                                    <button class="btn-action btn-create" onclick="createProduct()">+ New Product</button>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody id="productsTableBody">
+                            <!-- Products will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Warehouses Section -->
+            <section id="warehousesSection" class="content-section">
+                <h2>Warehouses Management</h2>
+                <div class="table-container">
+                    <table class="data-table" id="warehousesTable">
+                        <thead>
+                            <tr>
+                                <th>Warehouse ID</th>
+                                <th>Name</th>
+                                <th>Location Code</th>
+                                <th>Active</th>
+                                <th>Inventory</th>
+                                <th>
+                                    <button class="btn-action btn-create" onclick="createWarehouse()">+ New Warehouse</button>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody id="warehousesTableBody">
+                            <!-- Warehouses will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Inventory Section (Hidden by default, shown when clicking warehouse inventory) -->
+            <section id="inventorySection" class="content-section">
+                <div class="section-header">
+                    <button class="btn-back" onclick="showSection('warehouses')">← Back to Warehouses</button>
+                    <h2>Inventory for <span id="inventoryWarehouseName"></span></h2>
+                </div>
+                <div class="table-container">
+                    <table class="data-table" id="inventoryTable">
+                        <thead>
+                            <tr>
+                                <th>Item</th>
+                                <th>Quantity Available</th>
+                                <th>Quantity Reserved</th>
+                                <th>
+                                    <button class="btn-action btn-create" onclick="createInventoryItem()">+ New Item</button>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody id="inventoryTableBody">
+                            <!-- Inventory items will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Reports Section -->
+            <section id="reportsSection" class="content-section">
+                <h2>Reports</h2>
+                <div class="table-container">
+                    <table class="data-table" id="reportsTable">
+                        <thead>
+                            <tr>
+                                <th>Report Name</th>
+                                <th>Last Update</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Sales Report</td>
+                                <td id="salesReportUpdate">-</td>
+                                <td>
+                                    <button class="btn-action" onclick="viewReport('sales')">View Report</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Stock Report</td>
+                                <td id="stockReportUpdate">-</td>
+                                <td>
+                                    <button class="btn-action" onclick="viewReport('stock')">View Report</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Report View Section -->
+            <section id="reportViewSection" class="content-section report-view">
+                <div class="section-header">
+                    <button class="btn-back" onclick="showSection('reports')">← Back to Reports</button>
+                    <h2 id="reportViewTitle"></h2>
+                </div>
+                <div id="reportViewContent" class="report-content">
+                    <!-- Report content will be populated here -->
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modal for Creating/Editing Records -->
+    <div id="recordModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeRecordModal()">&times;</span>
+            <h2 id="modalTitle">Create Record</h2>
+            <form id="recordForm">
+                <div id="modalFormFields">
+                    <!-- Form fields will be dynamically added here -->
+                </div>
+                <div class="modal-actions">
+                    <button type="submit" class="btn-primary">Save</button>
+                    <button type="button" class="btn-secondary" onclick="closeRecordModal()">Cancel</button>
+                </div>
+                <div id="recordError" class="error-message"></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="spinner"></div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/orders.js"></script>
+    <script src="js/products.js"></script>
+    <script src="js/warehouses.js"></script>
+    <script src="js/reports.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
