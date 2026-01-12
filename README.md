@@ -82,6 +82,7 @@ Diagram:
 | API Server  | /src                   | Business logic, authentication, endpoints |
 | Web App     | /app                   | User interface                            |
 | Test API    | /server_emulator_no_db | Backend stub                              |
+| Test Cases  | /tests                 | Test Cases to control functionality       |
 
 Relationships:
 
