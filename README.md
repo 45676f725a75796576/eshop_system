@@ -1,7 +1,3 @@
-Below is a complete **README.md** tailored to your repository at *[https://github.com/45676f725a75796576/eshop_system](https://github.com/45676f725a75796576/eshop_system)* and to satisfy all the documentation requirements you listed, expanded where logical (requirements, architecture, diagrams, testing, errors, installation, etc.).
-
----
-
 # **E-SHOP SYSTEM**
 
 **Author:** Yegor Zuyev
@@ -273,5 +269,3 @@ If CSV or JSON import/export exists:
 
 * Export product list → CSV with fields: product_id, name, qty, price
 * Import rules: fields required, type constraints
-
-*(If not implemented, note planned future work)*
