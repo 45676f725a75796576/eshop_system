@@ -5,6 +5,7 @@
 **Date:** January 2026
 **Institution:** SPŠE Ječná, Praha 2
 **Project Type:** School Project – E-shop Warehouse & Order Management System
+**Project task:** RDBMS Project D1
 
 ---
 
