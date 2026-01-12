@@ -39,7 +39,7 @@ This repository contains a software system designed for e-shops to manage wareho
 * Test API emulator (no database)
 * Front-end interface
 
-The system supports basic CRUD operations for stock and orders, emphasizing user requirements for management in a simple e-shop environment. ([GitHub][1])
+The system supports basic CRUD operations for stock and orders, emphasizing user requirements for management in a simple e-shop environment.
 
 ---
 
