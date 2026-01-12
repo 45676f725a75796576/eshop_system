@@ -1,0 +1,7 @@
+pyodbc
+flask
+flask-cors
+dotenv
+secrets
+tkinter
+requests
