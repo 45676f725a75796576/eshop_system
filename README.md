@@ -90,35 +90,12 @@ Relationships:
 
 ---
 
-## **5. Use Case Scenarios**
-
-### **5.1 Login**
-
-* User opens frontend.
-* Enters credentials → API validates → returns token/session.
-
-### **5.2 Inventory Management**
-
-* User selects inventory.
-* API retrieves items → displays list.
-* User adds/edits/deletes item → API updates DB.
-
-### **5.3 Order Registration**
-
-* User selects items and customer info.
-* API writes order → DB updates stock.
-* System returns status.
-
-UML activity diagrams should be inserted here (user login, inventory update, order creation).
-
----
-
-## **6. Installation & Configuration**
+## **5. Installation & Configuration**
 
 ### **Before You Begin**
 
 * Install Python 3.10+
-* Install MS SQL Server
+* Install MS SQL Serve
 * Clone repository
 
 ### **Database Setup**
@@ -166,7 +143,7 @@ python main.py
 
 ---
 
-## **7. Database Design**
+## **6. Database Design**
 
 ER Model & Details:
 
@@ -185,7 +162,7 @@ ER Model & Details:
 
 ---
 
-## **8. API Behavior & Operation Flow**
+## **7. API Behavior & Operation Flow**
 
 Behavior sequences:
 
@@ -197,7 +174,7 @@ Behavior sequences:
 
 ---
 
-## **9. Third-Party Dependencies**
+## **8. Third-Party Dependencies**
 
 Non-functional requirements:
 
@@ -209,7 +186,7 @@ List from requirements file should be included verbatim here.
 
 ---
 
-## **10. Error Handling**
+## **9. Error Handling**
 
 | Error | Code         | Description           | Solution                     |
 | ----- | ------------ | --------------------- | ---------------------------- |
@@ -222,7 +199,7 @@ List from requirements file should be included verbatim here.
 
 ---
 
-## **11. Testing & Validation**
+## **10. Testing & Validation**
 
 ### **Manual Testing**
 
@@ -243,7 +220,7 @@ Test results table example:
 
 ---
 
-## **12. Versioning & Known Issues**
+## **11. Versioning & Known Issues**
 
 ### Versions
 
@@ -257,15 +234,13 @@ Test results table example:
 
 ---
 
-## **13. Licensing & Legal**
+## **12. Licensing & Legal**
 
 This project is open for educational use. All code authored by *Yegor Zuyev*. No third-party license conflicts identified but dependent libraries follow their own licenses.
 
-Include explicit license file if needed (MIT, etc.).
-
 ---
 
-## **14. Import/Export Specifications**
+## **13. Import/Export Specifications**
 
 If CSV or JSON import/export exists:
 
